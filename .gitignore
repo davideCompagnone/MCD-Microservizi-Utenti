@@ -3,3 +3,4 @@ aws.yaml
 provadb.py
 .venv/
 __pycache__/
+dynamo_context_manager.py # da valutare se tenere o no
