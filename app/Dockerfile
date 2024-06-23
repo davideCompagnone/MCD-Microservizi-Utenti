@@ -14,6 +14,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Copy routers
 COPY ./routers ./routers
 
+# Copy main.py
 COPY ./main.py ./main.py
 
 # When running the image, run the command to deploy the web interface
