@@ -1,11 +1,10 @@
 from routers.v1.router import root_api_router as v1_router
-from routers.v1.utils.custom_logger import LogSetupper
 from fastapi import FastAPI
+from routers.v1.exceptions import http_exception_handler, HTTPException
 
-logger = LogSetupper(__name__).setup()
-
-
+# Crea un'istanza dell'applicazione FastAPI.
 app = FastAPI()
 
 # Import and register the routers
 app.include_router(v1_router)
+app.add_exception_handler(HTTPException, http_exception_handler)
