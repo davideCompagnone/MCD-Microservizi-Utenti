@@ -147,32 +147,23 @@ def delete_user(user_id):
 # Funzione per ottenere tutti gli utenti o uno specifico per ID
 def get_users(user_id=None):
     table = dynamodb.Table(table_name)
-    try:
-        if user_id:
-            response = table.get_item(Key={'user_id': user_id})
-            item = response.get('Item')
-            if item:
-                print("Dettagli utente:")
+    if user_id:
+        response = table.get_item(Key={'user_id': user_id})
+        item = response.get('Item')
+        print("Dettagli utente:")
+        print(item)
+        return item
+    else:
+        response = table.scan()
+        items = response.get('Items', [])
+        if items:
+            print("Lista degli utenti:")
+            for item in items:
                 print(item)
-                return item
-            else:
-                print(f"Nessun utente trovato con ID {user_id}.")
-                return None
+            return items
         else:
-            response = table.scan()
-            items = response.get('Items', [])
-            if items:
-                print("Lista degli utenti:")
-                for item in items:
-                    print(item)
-                return items
-            else:
-                print("Nessun utente trovato.")
-                return None
-    except ClientError as e:
-        print("Errore durante il recupero degli utenti:", e.response['Error']['Message'])
-        return -1
-
+            print("Nessun utente trovato.")
+            return None
 
 def delete_table(table_name):
     if not table_exists(table_name):

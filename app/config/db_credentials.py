@@ -1,6 +1,11 @@
 from dataclasses import dataclass, Field
 import os
 
+if os.getenv("ENV", "local") == "local":
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
 
 def get_env_variable(var_name: str, default=None) -> str:
     """Esegui il parsing di una variabile d'ambiente.
@@ -16,25 +21,25 @@ def get_env_variable(var_name: str, default=None) -> str:
         str: Il valore della variabile d'ambiente.
     """
     try:
+        # Restituisce il valore della variabile d'ambiente
         return os.environ[var_name]
+    # Se non esiste
     except KeyError:
+        # Se è definito un valore di default lo restituisce
         if default is not None:
             return default
-        error_msg = f"Required environment variable {var_name} is not set."
-        raise EnvironmentError(error_msg)
+        raise EnvironmentError(
+            f"La variabile {var_name} non è stata impostata correttamente."
+        )
 
 
 @dataclass(frozen=True, slots=True)
 class DynamoCredentials:
-    """Define credentials model.
+    """Definisce il modello delle credenziali per la connessione a DynamoDB.
 
     Attributes:
         username (str): Username.
         password (str): Password.
-
-    Raises:
-        pydantic.error_wrappers.ValidationError: If any of provided attribute
-            doesn't pass type validation.
 
     """
 
@@ -42,9 +47,7 @@ class DynamoCredentials:
     awsSecretAccessKey: str = Field(
         default_factory=get_env_variable("AWS_SECRET_ACCESS_KEY")
     )
-    endpointUrl: str = Field(
-        default_factory=get_env_variable("AWS_ENDPOINT_URL", "http://localhost:8000")
-    )
+    endpointUrl: str = Field(default_factory=get_env_variable("AWS_ENDPOINT_URL"))
     regionName: str = Field(
         default_factory=get_env_variable("AWS_REGION_NAME", "us-west-2")
     )
