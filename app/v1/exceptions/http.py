@@ -1,4 +1,5 @@
-"""Custom FastAPI HTTP exception"""
+"""Application implementation - custom FastAPI HTTP exception with handler."""
+
 from typing import Any, Optional, Dict
 
 from fastapi import Request
@@ -24,12 +25,12 @@ class HTTPException(Exception):
         content: Any = None,
         headers: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """Inizializza un'istanza della classe HTTPException.
+        """Initialize HTTPException class object instance.
 
         Args:
-            status_code (int): Codice di stato dell'errore HTTP.
-            content (Any): Corpo della risposta.
-            headers (Optional[Dict[str, Any]]): Intestazioni aggiuntive della risposta.
+            status_code (int): HTTP error status code.
+            content (Any): Response body.
+            headers (Optional[Dict[str, Any]]): Additional response headers.
 
         """
         self.status_code = status_code
@@ -37,10 +38,10 @@ class HTTPException(Exception):
         self.headers = headers
 
     def __repr__(self) -> str:
-        """Implementazione del metodo __repr__ personalizzato della classe.
+        """Class custom __repr__ method implementation.
 
         Returns:
-            str: Oggetto stringa HTTPException.
+            str: HTTPException string object.
 
         """
         kwargs = []

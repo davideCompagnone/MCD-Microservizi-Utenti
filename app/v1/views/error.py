@@ -1,4 +1,3 @@
-"""Application implementation - error response."""
 from typing import Dict, Any, Optional, List, Union
 from http import HTTPStatus
 
@@ -22,7 +21,7 @@ class ErrorModel(BaseModel):
 
     code: int
     message: str
-    details: Optional[List[Dict[str, Any]]]
+    details: Optional[List[Dict[str, Any]]] = None
 
     @root_validator(pre=False, skip_on_failure=True)
     def _set_status(cls, values: Dict[str, Any]) -> Dict[str, Any]:

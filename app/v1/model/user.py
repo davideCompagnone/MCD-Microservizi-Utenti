@@ -1,15 +1,4 @@
-from pydantic import EmailStr, BaseModel, Field
-
-
-class Indirizzo(BaseModel):
-    via: str = Field(min_length=5)
-    civico: int
-    cap: int
-    citta: str = Field(min_length=5)
-    provincia: str = Field(min_length=2, max_length=2)
-
-    def __str__(self):
-        return f"{self.via} {self.civico}, {self.cap} {self.citta} ({self.provincia})"
+from pydantic import EmailStr, BaseModel
 
 
 class User(BaseModel):
@@ -18,8 +7,8 @@ class User(BaseModel):
     codice_fiscale: str
     email: EmailStr
     numero_telefono: str
-    indirizzo_residenza: Indirizzo
-    indirizzo_fatturazione: Indirizzo
+    indirizzo_residenza: str
+    indirizzo_fatturazione: str
 
 
 if __name__ == "__main__":
@@ -29,19 +18,7 @@ if __name__ == "__main__":
         codice_fiscale="RSSMRA80A01",
         email="federico.cantarelli@mail.polimi.it",
         numero_telefono="1234567890",
-        indirizzo_residenza=Indirizzo(
-            via="Via Garibaldi",
-            civico=1,
-            cap=20100,
-            citta="Milano",
-            provincia="MI",
-        ),
-        indirizzo_fatturazione=Indirizzo(
-            via="Via Garibaldi",
-            civico=1,
-            cap=20100,
-            citta="Milano",
-            provincia="MI",
-        ),
+        indirizzo_residenza="Via Garibaldi 1, 20100 Milano (MI)",
+        indirizzo_fatturazione="Via Garibaldi 1, 20100 Milano (MI)",
     )
     print(user)

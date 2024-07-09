@@ -33,25 +33,20 @@ class DynamoContext:
         self.close()
 
 
-@dataclass(frozen=True, slots=True)
 class DynamoConnection:
-    credentials: DynamoCredentials
-    table_name: str = field(default="User")
-    index_name: str = field(default="user_id-index")
-    dynamo_db: boto3.resource = field(default_factory=boto3.resource, init=False)
-
-    # Apri la connessione
-    def __post_init__(self):
-        if self.dynamo_db is None:
-            self.dynamo_db = boto3.resource(
-                "dynamodb",
-                endpoint_url=self.credentials.endpointUrl,
-                region_name=self.credentials.regionName,
-                aws_access_key_id=self.credentials.awsAccessKeyId,
-                aws_secret_access_key=self.credentials.awsSecretAccessKey,
-            )
-        if self.credentials is None:
-            self.credentials = parse_credentials()
+    def __init__(
+        self, table_name: str = "User", index_name: str = "user_id-index"
+    ) -> None:
+        self.credentials = parse_credentials()
+        self.table_name = table_name
+        self.index_name = index_name
+        self.dynamo_db = boto3.resource(
+            "dynamodb",
+            endpoint_url=self.credentials.endpointUrl,
+            region_name=self.credentials.regionName,
+            aws_access_key_id=self.credentials.awsAccessKeyId,
+            aws_secret_access_key=self.credentials.awsSecretAccessKey,
+        )
 
     def close(self) -> None:
         """Funzione per chiudere la connessione a Dynamo DB"""
@@ -219,7 +214,7 @@ class DynamoConnection:
 
     @property
     def is_alive(self) -> Tuple[bool, int]:
-        response = self.list_tables()
+        response = self.dynamo_db.meta.client.list_tables()
         return (
             response["ResponseMetadata"]["HTTPStatusCode"] == 200,
             response["ResponseMetadata"]["HTTPStatusCode"],

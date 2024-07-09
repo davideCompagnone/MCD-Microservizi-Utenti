@@ -10,6 +10,7 @@ from ..config.db_credentials import DynamoCredentials
 
 
 router = APIRouter()
+connection = DynamoConnection()
 logger = logging.getLogger(__name__)
 
 
@@ -39,10 +40,9 @@ async def readiness_check() -> ReadyResponse:
             FastAPI.HTTPException class.
 
     """
-    logger.info("Started GET /ready")
+    logger.info("Started POST /users")
 
     # Check if DynamoDB is up and running
-    connection = DynamoConnection()
 
     if not connection.is_alive:
         logger.error("Connesisone a DynamoDB non riuscita")
