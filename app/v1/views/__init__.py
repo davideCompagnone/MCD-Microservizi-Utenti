@@ -3,7 +3,7 @@ from .ready import ReadyResponse
 from .health import HealthResponse
 from .user_inserted import UserInsertedResponse
 from .user_deleted import UserDeletedResponse
-
+from .get_user import GetUserResponse
 
 __all__ = (
     "ErrorResponse",
@@ -12,4 +12,5 @@ __all__ = (
     "ErrorModel",
     "UserInsertedResponse",
     "UserDeletedResponse",
+    "GetUserResponse",
 )
