@@ -12,7 +12,7 @@ COPY ./requirements.txt ./requirements.txt
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy routers
-COPY ./routers ./routers
+COPY ./v1 ./v1
 
 # Copy main.py
 COPY ./main.py ./main.py
