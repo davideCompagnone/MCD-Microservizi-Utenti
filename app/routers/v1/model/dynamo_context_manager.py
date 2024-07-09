@@ -8,7 +8,7 @@ from app.routers.v1.exceptions.dynamo import (
 import boto3
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from app.routers.v1.model.user import User
 from dataclasses import dataclass, field
 from app.utils.custom_logger import LogSetupper
@@ -51,6 +51,14 @@ class DynamoConnection:
         """Funzione per chiudere la connessione a Dynamo DB"""
         self.dynamo_db.meta.client.close()
 
+    def list_tables(self) -> List[str]:
+        """Funzione per ottenere la lista delle tabelle presenti in DynamoDB
+
+        Returns:
+            List[str]: Ritorna la lista delle tabelle presenti in DynamoDB. Ritorna [] se non sono state trovate tabelle.
+        """
+        return self.dynamo_db.meta.client.list_tables()["TableNames"]
+
     # Proprietà per verificare se la tabella esiste
     @property
     def table_exists(self) -> bool:
@@ -59,7 +67,7 @@ class DynamoConnection:
         Returns:
             bool: Ritorna True se la tabella esiste, False altrimenti
         """
-        existing_tables = self.dynamo_db.meta.client.list_tables()["TableNames"]
+        existing_tables = self.list_tables()
         return self.table_name in existing_tables
 
     # Funzione per ritornare il massimo ID presente nella tabella
@@ -202,6 +210,14 @@ class DynamoConnection:
         )
         table.meta.client.get_waiter("table_exists").wait(TableName=self.table_name)
         logger.info(f"Tabella '{self.table_name}' creata con successo!")
+
+    @property
+    def is_alive(self) -> Tuple[bool, int]:
+        response = self.list_tables()
+        return (
+            response["ResponseMetadata"]["HTTPStatusCode"] == 200,
+            response["ResponseMetadata"]["HTTPStatusCode"],
+        )
 
 
 # # Funzione per inserire un nuovo utente nella tabella
