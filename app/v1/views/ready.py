@@ -1,4 +1,5 @@
 """Implementazione della risposta ready del servizio"""
+
 from typing import Any, Dict
 
 from pydantic import BaseModel

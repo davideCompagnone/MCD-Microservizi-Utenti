@@ -1,5 +1,5 @@
-from app.config.db_credentials import DynamoCredentials
-from app.routers.v1.exceptions.dynamo import (
+from ..config.db_credentials import DynamoCredentials
+from ..exceptions.dynamo import (
     DynamoTableDoesNotExist,
     DynamoTableAlreadyExists,
     UserNotFound,
@@ -9,11 +9,15 @@ import boto3
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from typing import List, Dict, Tuple
-from app.routers.v1.model.user import User
+from ..model.user import User
 from dataclasses import dataclass, field
-from app.utils.custom_logger import LogSetupper
+from ..utils.custom_logger import LogSetupper
 
 logger = LogSetupper(__name__).setup()
+
+
+def parse_credentials() -> DynamoCredentials:
+    return DynamoCredentials()
 
 
 class DynamoContext:
@@ -31,10 +35,10 @@ class DynamoContext:
 
 @dataclass(frozen=True, slots=True)
 class DynamoConnection:
-    credentials: DynamoCredentials = DynamoCredentials()
+    credentials: DynamoCredentials
     table_name: str = field(default="User")
     index_name: str = field(default="user_id-index")
-    dynamo_db: boto3.resource | None = None
+    dynamo_db: boto3.resource = field(default_factory=boto3.resource, init=False)
 
     # Apri la connessione
     def __post_init__(self):
@@ -46,6 +50,8 @@ class DynamoConnection:
                 aws_access_key_id=self.credentials.awsAccessKeyId,
                 aws_secret_access_key=self.credentials.awsSecretAccessKey,
             )
+        if self.credentials is None:
+            self.credentials = parse_credentials()
 
     def close(self) -> None:
         """Funzione per chiudere la connessione a Dynamo DB"""
@@ -218,63 +224,3 @@ class DynamoConnection:
             response["ResponseMetadata"]["HTTPStatusCode"] == 200,
             response["ResponseMetadata"]["HTTPStatusCode"],
         )
-
-
-# # Funzione per inserire un nuovo utente nella tabella
-# def insert_user(nome, cognome, cf, p_iva, email,n_telefono,indirizzo_residenza,indirizzo_fatturazione):
-#     if not table_exists(table_name):
-#         create_users_table()
-
-#     try:
-#         max_user_id = get_max_user_id()
-#         if max_user_id ==-1:
-#             print("Errore nel recupero dello user id, riprovare")
-#             return -1
-#         else:
-#             new_user_id = max_user_id + 1
-
-#         table = dynamodb.Table(table_name)
-#         table.put_item(
-#             Item={
-#                 'user_id': new_user_id,
-#                 'nome': nome,
-#                 'cognome':cognome,
-#                 'cf': cf,
-#                 'p_iva': p_iva,
-#                 'email': email,
-#                 'n_telefono':n_telefono,
-#                 'indirizzo_residenza' : indirizzo_residenza,
-#                 'indirizzo_fatturazione' : indirizzo_fatturazione
-#             }
-#         )
-#         print(f"Utente con ID {new_user_id} inserito con successo.")
-#         return new_user_id
-
-#     except ClientError as e:
-#         print("Errore durante l'inserimento dell'utente:", e.response['Error']['Message'])
-#         return -2
-
-
-# if __name__=="__main__":
-
-#     # Esempio di utilizzo delle funzioni definite
-
-#     # Creazione della tabella se non esiste
-#     create_users_table()
-
-#     # Inserimento di un nuovo utente
-#     user_id=insert_user( 'alice', 'al','738219837213',None,'alice@example.com','32243242342','via kennedy',None)
-#     user_id=insert_user( 'bob', 'blob','738219837213',None,'bob@example.com','32243242342','via kennedy',None)
-#     user_id=insert_user( 'carl', 'marx',None,'sa.kjda88','carle@example.com','32243242342','via lenin','via mosca')
-
-
-#     # Ottenere tutti gli utenti
-#     get_users()
-
-#     # Ottenere un utente specifico per ID
-#     get_users(user_id)
-
-#     # Eliminazione di un utente
-#     delete_user(user_id)
-
-#     delete_table(table_name)

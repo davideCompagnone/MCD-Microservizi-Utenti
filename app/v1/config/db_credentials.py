@@ -1,10 +1,5 @@
-from dataclasses import dataclass, Field
+from dataclasses import dataclass, field
 import os
-
-if os.getenv("ENV", "local") == "local":
-    from dotenv import load_dotenv
-
-    load_dotenv()
 
 
 def get_env_variable(var_name: str, default=None) -> str:
@@ -24,13 +19,13 @@ def get_env_variable(var_name: str, default=None) -> str:
         # Restituisce il valore della variabile d'ambiente
         return os.environ[var_name]
     # Se non esiste
-    except KeyError:
+    except KeyError as e:
         # Se è definito un valore di default lo restituisce
         if default is not None:
             return default
-        raise EnvironmentError(
-            f"La variabile {var_name} non è stata impostata correttamente."
-        )
+        # raise EnvironmentError(
+        #     f"La variabile {var_name} non è stata impostata correttamente."
+        # )
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,11 +38,12 @@ class DynamoCredentials:
 
     """
 
-    awsAccessKeyId: str = Field(default_factory=get_env_variable("AWS_ACCESS_KEY_ID"))
-    awsSecretAccessKey: str = Field(
-        default_factory=get_env_variable("AWS_SECRET_ACCESS_KEY")
-    )
-    endpointUrl: str = Field(default_factory=get_env_variable("AWS_ENDPOINT_URL"))
-    regionName: str = Field(
-        default_factory=get_env_variable("AWS_REGION_NAME", "us-west-2")
-    )
+    awsAccessKeyId: str = field(default=get_env_variable("AWS_ACCESS_KEY_ID"))
+    awsSecretAccessKey: str = field(default=get_env_variable("AWS_SECRET_ACCESS_KEY"))
+    endpointUrl: str = field(default=get_env_variable("AWS_ENDPOINT_URL"))
+    regionName: str = field(default=get_env_variable("AWS_REGION_NAME", "us-west-2"))
+
+
+if __name__ == "__main__":
+    credentials = DynamoCredentials()
+    print(credentials)

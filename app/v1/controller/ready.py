@@ -5,10 +5,12 @@ import logging
 from fastapi import APIRouter
 from ..views import ReadyResponse, ErrorResponse
 from ..exceptions import HTTPException
+from ..model.dynamo_context_manager import DynamoConnection
+from ..config.db_credentials import DynamoCredentials
 
 
 router = APIRouter()
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @router.get(
@@ -37,15 +39,18 @@ async def readiness_check() -> ReadyResponse:
             FastAPI.HTTPException class.
 
     """
-    log.info("Started GET /ready")
+    logger.info("Started GET /ready")
 
-    # if settings.USE_REDIS and not await RedisClient.ping():
-    #     log.error("Could not connect to Redis")
-    #     raise HTTPException(
-    #         status_code=502,
-    #         content=ErrorResponse(code=502, message="Could not connect to Redis").dict(
-    #             exclude_none=True
-    #         ),
-    #     )
+    # Check if DynamoDB is up and running
+    connection = DynamoConnection()
+
+    if not connection.is_alive:
+        logger.error("Connesisone a DynamoDB non riuscita")
+        raise HTTPException(
+            status_code=502,
+            content=ErrorResponse(code=502, message="Could not connect to Redis").dict(
+                exclude_none=True
+            ),
+        )
 
     return ReadyResponse(status="ok")
