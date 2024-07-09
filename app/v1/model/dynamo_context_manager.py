@@ -111,6 +111,7 @@ class DynamoConnection:
                 raise e
 
         max_id = self.get_max_table_id()
+        logger.debug(f"ID massimo presente nella tabella: {max_id}")
 
         new_user_id = max_id + 1
 
@@ -131,10 +132,35 @@ class DynamoConnection:
         logger.info(f"Utente con ID {new_user_id} inserito con successo.")
         return str(new_user_id)
 
+    def user_exists(self, user_id: str) -> bool:
+        """Funzione per verificare se un utente esiste nella tabella.
+
+        Args:
+            user_id (str): User ID da verificare
+
+        Returns:
+            bool: True se l'utente esiste, False altrimenti
+        """
+        table = self.dynamo_db.Table(self.table_name)
+        response = table.get_item(Key={"user_id": user_id})
+        return "Item" in response
+
     # Funzione per cancellare un utente
     def delete_user(self, user_id: str):
+        """Funzione per eliminare un utente partendo dall'id
+
+        Args:
+            user_id (str): User ID dell'utente da eliminare
+
+        Raises:
+            DynamoTableDoesNotExist: tabella non esistente
+            UserNotFound: Utenza non trovata
+        """
         if not self.table_exists:
             raise DynamoTableDoesNotExist(self.table_name)
+
+        if not self.user_exists(user_id):
+            raise UserNotFound(user_id)
 
         table = self.dynamo_db.Table(self.table_name)
 

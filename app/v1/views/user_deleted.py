@@ -8,7 +8,6 @@ from ..model.user import User
 
 class UserDeletedResponse(BaseModel):
     status: str
-    user: User
     user_id: str
 
     class Config:

@@ -4,7 +4,7 @@ import logging
 
 from fastapi import APIRouter
 from ..views import UserDeletedResponse, ErrorResponse
-from ..exceptions import HTTPException
+from ..exceptions import HTTPException, UserNotFound, DynamoTableDoesNotExist
 from ..model.dynamo_context_manager import DynamoConnection
 from ..model.user import User
 from botocore.exceptions import ClientError
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
         500: {"model": ErrorResponse},
     },
 )
-async def insert_user(user_id: str) -> UserDeletedResponse:
+async def delete_user(user_id: int) -> UserDeletedResponse:
     """Run basic application health check.
 
     If the application is up and running then this endpoint will return simple
@@ -58,47 +58,33 @@ async def insert_user(user_id: str) -> UserDeletedResponse:
                 code=502, message="Connessione a DynamoDB non riuscita"
             ).model_dump(exclude_none=True),
         )
-    
+
     try:
         connection.delete_user(user_id)
-
-    try:
-        user_id = connection.insert_user(user)
-        logger.info(f"Utente inserito con id {user_id}")
-
+        logger.info(f"Utente eliminato con id {user_id}")
+    except DynamoTableDoesNotExist as e:
+        logger.error(f"Tabella non trovata: {e}")
+        raise HTTPException(
+            status_code=404,
+            content=ErrorResponse(
+                code=404, message=f"Tabella non trovata: {e}"
+            ).model_dump(exclude_none=True),
+        )
+    except UserNotFound as e:
+        logger.error(f"Utente con ID {user_id} non trovato: {e}")
+        raise HTTPException(
+            status_code=404,
+            content=ErrorResponse(
+                code=404, message=f"Utente con ID {user_id} non trovato"
+            ).model_dump(exclude_none=True),
+        )
     except ClientError as e:
-        logger.error(f"Errore durante l'inserimento dell'utente: {e}")
+        logger.error(f"Errore durante l'eliminazione dell'utente: {e}")
         raise HTTPException(
             status_code=500,
             content=ErrorResponse(
                 code=500,
-                message="Errore durante l'inserimento dell'utente",
+                message="Errore durante l'eliminazione dell'utente",
             ).model_dump(exclude_none=True),
         )
-    except Exception as e:
-        logger.error(f"Errore sconosciuto: {e}")
-        raise HTTPException(
-            status_code=500,
-            content=ErrorResponse(
-                code=500,
-                message="Internal server error",
-            ).model_dump(exclude_none=True),
-        )
-
-    return UserInsertedResponse(status="ok", user_id=user_id)
-
-
-@app.delete("/users/{user_id}")
-def delete_user(user_id: str):
-    try:
-        response = table.get_item(Key={"user_id": user_id})
-        if "Item" not in response:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        table.delete_item(Key={"user_id": user_id})
-        return {"detail": "User deleted successfully"}
-    except ClientError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error deleting user: {e.response['Error']['Message']}",
-        )
+    return UserDeletedResponse(status="ok", user_id=str(user_id))
