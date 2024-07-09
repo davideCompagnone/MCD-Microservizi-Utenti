@@ -2,11 +2,14 @@
 
 import logging
 
-from fastapi import APIRouter
-from ..views import ReadyResponse, ErrorResponse
+from fastapi import APIRouter, Body
+from ..views import UserInsertedResponse, ErrorResponse
 from ..exceptions import HTTPException
 from ..model.dynamo_context_manager import DynamoConnection
+from ..model.user import User
 from ..config.db_credentials import DynamoCredentials
+from botocore.exceptions import ClientError
+from typing import Dict
 
 
 router = APIRouter()
@@ -14,15 +17,19 @@ connection = DynamoConnection()
 logger = logging.getLogger(__name__)
 
 
-@router.get(
-    "/ready",
-    tags=["ready"],
-    response_model=ReadyResponse,
+@router.post(
+    "/users",
+    tags=["inser_user"],
+    response_model=UserInsertedResponse,
     summary="Simple health check.",
     status_code=200,
-    responses={502: {"model": ErrorResponse}},
+    responses={
+        400: {"model": ErrorResponse},
+        502: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
 )
-async def readiness_check() -> ReadyResponse:
+async def insert_user(user: User) -> UserInsertedResponse:
     """Run basic application health check.
 
     If the application is up and running then this endpoint will return simple
@@ -52,12 +59,28 @@ async def readiness_check() -> ReadyResponse:
                 code=502, message="Connessione a DynamoDB non riuscita"
             ).model_dump(exclude_none=True),
         )
-        # raise HTTPException(
-        #     status_code=502,
-        #     content=ErrorResponse(
-        #         code=502,
-        #         message="Connessione a DynamoDB non riuscita",
-        #         details=[{"test": "test"}],
-        #     ).model_dump(exclude_none=True),
-        # )
-    return ReadyResponse(status="ok")
+
+    try:
+        user_id = connection.insert_user(user)
+        logger.info(f"Utente inserito con id {user_id}")
+
+    except ClientError as e:
+        logger.error(f"Errore durante l'inserimento dell'utente: {e}")
+        raise HTTPException(
+            status_code=500,
+            content=ErrorResponse(
+                code=500,
+                message="Errore durante l'inserimento dell'utente",
+            ).model_dump(exclude_none=True),
+        )
+    except Exception as e:
+        logger.error(f"Errore sconosciuto: {e}")
+        raise HTTPException(
+            status_code=500,
+            content=ErrorResponse(
+                code=500,
+                message="Internal server error",
+            ).model_dump(exclude_none=True),
+        )
+
+    return UserInsertedResponse(status="ok", user_id=user_id)

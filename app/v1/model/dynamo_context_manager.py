@@ -1,5 +1,5 @@
 from ..config.db_credentials import DynamoCredentials
-from ..exceptions.dynamo import (
+from ..exceptions import (
     DynamoTableDoesNotExist,
     DynamoTableAlreadyExists,
     UserNotFound,
@@ -95,6 +95,41 @@ class DynamoConnection:
 
         max_user_id = max(items, key=lambda x: int(x["user_id"]))["user_id"]
         return max_user_id
+
+    def insert_user(self, user: User) -> str:
+        if not self.table_exists:
+            logger.warning(
+                f"La tabella '{self.table_name}' non esiste. Creazione in corso..."
+            )
+            try:
+                self.create_users_table()
+                logger.info(f"Tabella '{self.table_name}' creata con successo!")
+            except Exception as e:
+                logger.error(
+                    f"Errore durante la creazione della tabella '{self.table_name}': {e}"
+                )
+                raise e
+
+        max_id = self.get_max_table_id()
+
+        new_user_id = max_id + 1
+
+        table = self.dynamo_db.Table(self.table_name)
+        table.put_item(
+            Item={
+                "user_id": new_user_id,
+                "nome": user.nome,
+                "cognome": user.cognome,
+                "cf": user.codice_fiscale,
+                "p_iva": user.partita_iva,
+                "email": user.email,
+                "n_telefono": user.numero_telefono,
+                "indirizzo_residenza": user.indirizzo_residenza,
+                "indirizzo_fatturazione": user.indirizzo_fatturazione,
+            }
+        )
+        logger.info(f"Utente con ID {new_user_id} inserito con successo.")
+        return str(new_user_id)
 
     # Funzione per cancellare un utente
     def delete_user(self, user_id: str):

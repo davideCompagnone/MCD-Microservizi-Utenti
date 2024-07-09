@@ -5,8 +5,9 @@ from typing import Any, Dict
 from pydantic import BaseModel
 
 
-class ReadyResponse(BaseModel):
+class UserInsertedResponse(BaseModel):
     status: str
+    user_id: str
 
     class Config:
         """Config sub-class needed to extend/override the generated JSON schema.
@@ -30,4 +31,4 @@ class ReadyResponse(BaseModel):
 
             """
             # Override schema description, by default is taken from docstring.
-            schema["description"] = "Ready response model."
+            schema["description"] = "User inserted response model."
