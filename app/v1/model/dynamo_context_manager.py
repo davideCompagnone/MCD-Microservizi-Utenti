@@ -12,12 +12,39 @@ from typing import List, Dict, Tuple
 from ..model.user import User
 from dataclasses import dataclass, field
 from ..utils.custom_logger import LogSetupper
+import os
 
 logger = LogSetupper(__name__).setup()
 
 
 def parse_credentials() -> DynamoCredentials:
     return DynamoCredentials()
+
+
+def create_connection(credentials: DynamoCredentials) -> boto3.resource:
+    """Crea una connessione a seconda della variabile di ambiente ENV
+
+    Args:
+        credentials (DynamoCredentials): Credenziali per connettersi a DynamoDB
+
+    Returns:
+        boto3.resource: Connessione a dynamodb configurata in base all'ambiente
+    """
+    if os.getenv("ENV") == "local":
+        return boto3.resource(
+            "dynamodb",
+            endpoint_url=credentials.endpointUrl,
+            region_name=credentials.regionName,
+            aws_access_key_id=credentials.awsAccessKeyId,
+            aws_secret_access_key=credentials.awsSecretAccessKey,
+        )
+    else:
+        return boto3.resource(
+            "dynamodb",
+            region_name=credentials.regionName,
+            aws_access_key_id=credentials.awsAccessKeyId,
+            aws_secret_access_key=credentials.awsSecretAccessKey,
+        )
 
 
 class DynamoContext:
