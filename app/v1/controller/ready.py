@@ -11,9 +11,9 @@ logger = LogSetupper(__name__).setup()
 
 @router.get(
     "/ready",
-    tags=["ready"],
+    tags=["Ready"],
     response_model=ReadyResponse,
-    summary="Simple health check.",
+    summary="Check dello stato dell'API e della connessione a dynamoDB.",
     status_code=200,
     responses={502: {"model": ErrorResponse}},
 )

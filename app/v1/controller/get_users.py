@@ -12,7 +12,7 @@ logger = LogSetupper(__name__).setup()
 
 @router.get(
     "/users",
-    tags=["get_all_user"],
+    tags=["Get all users"],
     response_model=GetAllUsersResponse,
     summary="Esegue il retrieve di tutti gli utenti.",
     status_code=200,

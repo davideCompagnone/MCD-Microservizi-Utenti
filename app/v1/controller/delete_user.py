@@ -13,7 +13,7 @@ logger = LogSetupper(__name__).setup()
 
 @router.delete(
     "/users/{user_id}",
-    tags=["delete_user"],
+    tags=["Delete a user"],
     response_model=UserDeletedResponse,
     summary="Cancella un utente dato il suo user id.",
     status_code=200,

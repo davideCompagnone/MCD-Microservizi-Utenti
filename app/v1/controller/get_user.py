@@ -15,7 +15,7 @@ connection = DynamoConnection()
 
 @router.get(
     "/users/{user_id}",
-    tags=["get_user"],
+    tags=["Get user details"],
     response_model=GetUserResponse,
     summary="Ottieni i dettagli di un utente dall user_id.",
     status_code=200,
