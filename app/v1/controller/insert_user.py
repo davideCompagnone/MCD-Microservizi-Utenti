@@ -1,20 +1,15 @@
-"""Application implementation - Ready controller."""
-
-import logging
-
-from fastapi import APIRouter, Body
+from fastapi import APIRouter
 from ..views import UserInsertedResponse, ErrorResponse
 from ..exceptions import HTTPException, DynamoTableDoesNotExist
 from ..model.dynamo_context_manager import DynamoConnection
 from ..model.user import User
-from ..config.db_credentials import DynamoCredentials
 from botocore.exceptions import ClientError
-from typing import Dict
+from ..utils.custom_logger import LogSetupper
 
 
 router = APIRouter()
 connection = DynamoConnection()
-logger = logging.getLogger(__name__)
+logger = LogSetupper(__name__).setup()
 
 
 @router.post(

@@ -1,19 +1,14 @@
-"""Application implementation - Ready controller."""
-
-import logging
-
 from fastapi import APIRouter
 from ..views import UserDeletedResponse, ErrorResponse
 from ..exceptions import HTTPException, UserNotFound, DynamoTableDoesNotExist
 from ..model.dynamo_context_manager import DynamoConnection
-from ..model.user import User
 from botocore.exceptions import ClientError
-from typing import Dict
+from ..utils.custom_logger import LogSetupper
 
 
 router = APIRouter()
 connection = DynamoConnection()
-logger = logging.getLogger(__name__)
+logger = LogSetupper(__name__).setup()
 
 
 @router.delete(

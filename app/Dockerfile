@@ -18,6 +18,6 @@ COPY ./v1 ./v1
 COPY ./main.py ./main.py
 
 # When running the image, run the command to deploy the web interface
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--log-level", "info"]
 
 EXPOSE 8080

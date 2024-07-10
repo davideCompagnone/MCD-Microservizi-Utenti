@@ -1,16 +1,12 @@
-"""Application implementation - Ready controller."""
-
-import logging
-
 from fastapi import APIRouter
 from ..views import ReadyResponse, ErrorResponse
 from ..exceptions import HTTPException
 from ..model.dynamo_context_manager import DynamoConnection
-from ..config.db_credentials import DynamoCredentials
+from ..utils.custom_logger import LogSetupper
 
 
 router = APIRouter()
-logger = logging.getLogger(__name__)
+logger = LogSetupper(__name__).setup()
 
 
 @router.get(

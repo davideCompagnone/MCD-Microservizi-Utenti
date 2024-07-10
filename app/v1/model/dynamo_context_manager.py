@@ -1,16 +1,8 @@
 from ..config.db_credentials import DynamoCredentials
-from ..exceptions import (
-    DynamoTableDoesNotExist,
-    DynamoTableAlreadyExists,
-    UserNotFound,
-    EmptyTable,
-)
+from ..exceptions import DynamoTableDoesNotExist, DynamoTableAlreadyExists, UserNotFound
 import boto3
-from botocore.exceptions import ClientError
-from boto3.dynamodb.conditions import Key
 from typing import List, Dict, Tuple
 from ..model.user import User
-from dataclasses import dataclass, field
 from ..utils.custom_logger import LogSetupper
 import os
 
