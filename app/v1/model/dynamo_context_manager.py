@@ -40,10 +40,9 @@ def create_connection(credentials: DynamoCredentials) -> boto3.resource:
 
 
 class DynamoContext:
-    def __init__(self, table_name: str, index_name: str):
-        self.tableName = table_name
+    def __init__(self, index_name: str):
         self.indexName = index_name
-        self.connection = DynamoConnection(table_name=table_name, index_name=index_name)
+        self.connection = DynamoConnection(index_name=index_name)
 
     def __enter__(self):
         return self.connection
@@ -53,11 +52,9 @@ class DynamoContext:
 
 
 class DynamoConnection:
-    def __init__(
-        self, table_name: str = "User", index_name: str = "user_id-index"
-    ) -> None:
+    def __init__(self, index_name: str = "user_id-index") -> None:
         self.credentials = parse_credentials()
-        self.table_name = table_name
+        self.table_name = self.credentials.tableName
         self.index_name = index_name
         self.dynamo_db = boto3.resource(
             "dynamodb",
