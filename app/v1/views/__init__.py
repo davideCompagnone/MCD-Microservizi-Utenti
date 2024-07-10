@@ -5,6 +5,7 @@ from .user_inserted import UserInsertedResponse
 from .user_deleted import UserDeletedResponse
 from .get_users import GetAllUsersResponse
 from .get_user import GetUserResponse
+from .update_user import UserUpdatedResponse
 
 __all__ = (
     "ErrorResponse",
@@ -15,4 +16,5 @@ __all__ = (
     "UserDeletedResponse",
     "GetAllUsersResponse",
     "GetUserResponse",
+    "UserUpdatedResponse"
 )
