@@ -25,5 +25,5 @@ AWS_ACCESS_KEY_ID='<key_id>'
 AWS_SECRET_ACCESS_KEY='<access_key>'
 AWS_ENDPOINT_URL='<endpointurl>:<port>'
 AWS_REGION_NAME='<region>'
-ENV='local' # 
+ENV='local' # variabile per configurazioni dipendenti dall'ambiente di esecuzione
 ```
