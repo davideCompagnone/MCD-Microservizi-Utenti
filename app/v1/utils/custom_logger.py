@@ -34,7 +34,7 @@ class LogSetupper:
         else:
             # Settings per il logger in ambiente locale
             # TODO modificare i settings per l'ambiente prod se necessario
-            app_logger.setLevel(logging.DEBUG)
+            app_logger.setLevel(logging.INFO)
             handler = logging.StreamHandler(sys.stdout)
             formatter = self._setup_local_formatter()
 
