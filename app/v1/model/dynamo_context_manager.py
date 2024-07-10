@@ -198,11 +198,11 @@ class DynamoConnection:
             logger.warning(f"Tabella '{self.table_name}' vuota.")
         return items
 
-    def get_user(self, user_id: str) -> Dict:
+    def get_user(self, user_id: int) -> Dict:
         """Funzione per estrarre un utente dalla tabella.
 
         Args:
-            user_id (str): Id dell'utente da estrarre.
+            user_id (int): Id dell'utente da estrarre.
 
         Raises:
             DynamoTableDoesNotExist: Eccezione sollevata se la tabella non esiste.
