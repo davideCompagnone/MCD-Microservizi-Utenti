@@ -17,6 +17,8 @@ docker-compose up --build # per eseguirelo in modalità detached aggiungere il f
 # Esegui una chiamata per verificare che sia correttamente in esecuzione
 curl http://localhost:8080/v1/ready
 ```
+Il file `esame_master.postman_collection.json` contiene delle chiamate postman d'esempio.
+
 ## Variabili ambientali
 ```bash
 AWS_ACCESS_KEY_ID='<key_id>'
