@@ -187,7 +187,7 @@ class DynamoConnection:
 
         table.delete_item(Key={"user_id": user_id})
 
-    def update_user(self, user_id: int, user_data: User) -> None:
+    def update_user(self, user_id: int, user_data: User) -> int:
         """Funzione per aggiornare un user esistente
         Args:
             user_id (int): User id dell'utente da aggiornare
@@ -195,6 +195,8 @@ class DynamoConnection:
         Raises:
             DynamoTableDoesNotExist: Se la tabella non esiste
             UserNotFound: Se l'utente non esiste
+        Returns:
+            int: Id dell'utente aggiornato
         """
         if not self.table_exists:
             raise DynamoTableDoesNotExist(self.table_name)
@@ -216,6 +218,7 @@ class DynamoConnection:
             },
             ReturnValues="UPDATED_NEW",
         )
+        return user_id
 
     # Funzione per cancellare la tabella
     def delete_table(self):

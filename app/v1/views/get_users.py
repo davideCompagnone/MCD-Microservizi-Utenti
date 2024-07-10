@@ -1,14 +1,14 @@
 """Implementazione della risposta ready del servizio"""
 
 from typing import Any, Dict, List, Optional
-from ..model.user import User
+from ..model.user import UserResponse
 
 from pydantic import BaseModel
 
 
 class GetAllUsersResponse(BaseModel):
     status: str
-    users: Optional[List[User]] = None
+    users: Optional[List[UserResponse]] = None
 
     class Config:
         """Config sub-class needed to extend/override the generated JSON schema.

@@ -14,7 +14,7 @@ logger = LogSetupper(__name__).setup()
 
 @router.post(
     "/users",
-    tags=["inser_user"],
+    tags=["Insert new user"],
     response_model=UserInsertedResponse,
     summary="Inserisci un nuovo utente in tabella",
     status_code=200,
