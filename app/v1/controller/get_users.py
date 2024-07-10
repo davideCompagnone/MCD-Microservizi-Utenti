@@ -17,29 +17,23 @@ logger = logging.getLogger(__name__)
     "/users",
     tags=["get_all_user"],
     response_model=GetAllUsersResponse,
-    summary="Get all users",
+    summary="Esegue il retrieve di tutti gli utenti.",
     status_code=200,
-    responses={502: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+    responses={502: {"model": ErrorResponse}, 500: {"model": ErrorResponse}},
 )
 async def get_all_user() -> GetAllUsersResponse:
-    """Run basic application health check.
-
-    If the application is up and running then this endpoint will return simple
-    response with status ok. Moreover, if it has Redis enabled then connection
-    to it will be tested. If Redis ping fails, then this endpoint will return
-    502 HTTP error.
-    \f
-
-    Returns:
-        response (ReadyResponse): ReadyResponse model object instance.
+    """Esegue il retrieve di tutti gli utenti
 
     Raises:
-        HTTPException: If applications has enabled Redis and can not connect
-            to it. NOTE! This is the custom exception, not to be mistaken with
-            FastAPI.HTTPException class.
+        HTTPException: 502 se la connessione a Dynamo DB non è riuscita
+        HTTPException: 502 se la tabella non esiste
+        HTTPException: 500 per un errore legato al client Dynamo db
 
+    Returns:
+        GetAllUsersResponse: Elenco di tutti gli utenti presenti nella tabella
     """
-    logger.info("Started GET /users")
+
+    logger.info("Comincio retrieve di tutti lgi utenti")
 
     # Check if DynamoDB is up and running
     connection = DynamoConnection()
@@ -58,10 +52,10 @@ async def get_all_user() -> GetAllUsersResponse:
         logger.info(f"Fetch di tutti gli utenti eseguito.")
 
     except DynamoTableDoesNotExist:
-        logger.error("Tabella non esistente")
+        logger.error("Tabella non trovata")
         raise HTTPException(
-            status_code=404,
-            content=ErrorResponse(code=404, message="Tabella non esistente").model_dump(
+            status_code=502,
+            content=ErrorResponse(code=502, message="Tabella non trovata").model_dump(
                 exclude_none=True
             ),
         )

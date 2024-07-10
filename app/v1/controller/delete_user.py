@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
     "/users/{user_id}",
     tags=["delete_user"],
     response_model=UserDeletedResponse,
-    summary="Delete an user by userid.",
+    summary="Cancella un utente dato il suo user id.",
     status_code=200,
     responses={
         404: {"model": ErrorResponse},
@@ -29,24 +29,22 @@ logger = logging.getLogger(__name__)
     },
 )
 async def delete_user(user_id: int) -> UserDeletedResponse:
-    """Run basic application health check.
+    """Funzione per eliminare un utente dato il suo user id
 
-    If the application is up and running then this endpoint will return simple
-    response with status ok. Moreover, if it has Redis enabled then connection
-    to it will be tested. If Redis ping fails, then this endpoint will return
-    502 HTTP error.
-    \f
-
-    Returns:
-        response (ReadyResponse): ReadyResponse model object instance.
+    Args:
+        user_id (int): Id dell'utente da eliminare
 
     Raises:
-        HTTPException: If applications has enabled Redis and can not connect
-            to it. NOTE! This is the custom exception, not to be mistaken with
-            FastAPI.HTTPException class.
+        HTTPException: 502 se la connessione a Dynamo DB non è riuscita
+        HTTPException: 502 se la tabella non esiste
+        HTTPException: 404 se l'utente non è stato trovato
+        HTTPException: 500 per un errore legato al client Dynamo db
+        HTTPException: 500 per un errore generico
 
+    Returns:
+        UserDeletedResponse: Risposta alla chiamata
     """
-    logger.info(f"Started delete /users")
+    logger.debug(f"Comincio cancellazione del'utente {user_id}")
 
     # Check if DynamoDB is up and running
 
@@ -65,9 +63,9 @@ async def delete_user(user_id: int) -> UserDeletedResponse:
     except DynamoTableDoesNotExist as e:
         logger.error(f"Tabella non trovata: {e}")
         raise HTTPException(
-            status_code=404,
+            status_code=502,
             content=ErrorResponse(
-                code=404, message=f"Tabella non trovata: {e}"
+                code=502, message=f"Tabella non trovata: {e}"
             ).model_dump(exclude_none=True),
         )
     except UserNotFound as e:
@@ -85,6 +83,15 @@ async def delete_user(user_id: int) -> UserDeletedResponse:
             content=ErrorResponse(
                 code=500,
                 message="Errore durante l'eliminazione dell'utente",
+            ).model_dump(exclude_none=True),
+        )
+    except Exception as e:
+        logger.error(f"Errore sconosciuto: {e}")
+        raise HTTPException(
+            status_code=500,
+            content=ErrorResponse(
+                code=500,
+                message="Internal server error",
             ).model_dump(exclude_none=True),
         )
     return UserDeletedResponse(status="ok", user_id=str(user_id))

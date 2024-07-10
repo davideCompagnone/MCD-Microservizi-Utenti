@@ -1,7 +1,9 @@
 """ Implementazione della classe custom logger per gestire i log in modo personalizzato."""
+
 import logging
 import json
 import os
+import sys
 
 
 class LogSetupper:
@@ -12,7 +14,6 @@ class LogSetupper:
             "test",
             "local",
             "prod",
-
         ], "Valore non valido per la variabile ambientale ENV. Got {}".format(self._env)
 
     def setup(self) -> logging.Logger:
@@ -28,7 +29,7 @@ class LogSetupper:
         elif self._env == "local":
             # Settings per il logger in ambiente locale
             app_logger.setLevel(logging.DEBUG)
-            handler = logging.StreamHandler()
+            handler = logging.StreamHandler(sys.stdout)
             formatter = self._setup_local_formatter()
 
         else:

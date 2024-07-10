@@ -3,11 +3,12 @@
 from typing import Any, Dict
 
 from pydantic import BaseModel
+from ..model.user import UserResponse
 
 
 class GetUserResponse(BaseModel):
     status: str
-    detail: Dict[str, Any]
+    detail: UserResponse
 
     class Config:
         """Config sub-class needed to extend/override the generated JSON schema.
