@@ -8,6 +8,7 @@ from botocore.exceptions import ClientError
 
 router = APIRouter()
 logger = LogSetupper(__name__).setup()
+connection = DynamoConnection()
 
 
 @router.get(
@@ -33,7 +34,6 @@ async def get_all_user() -> GetAllUsersResponse:
     logger.info("Comincio retrieve di tutti lgi utenti")
 
     # Check if DynamoDB is up and running
-    connection = DynamoConnection()
 
     if not connection.is_alive:
         logger.error("Connesisone a DynamoDB non riuscita")

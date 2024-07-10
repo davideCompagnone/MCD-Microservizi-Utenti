@@ -41,7 +41,8 @@ class DynamoCredentials:
     awsAccessKeyId: str = field(default=get_env_variable("AWS_ACCESS_KEY_ID"))
     awsSecretAccessKey: str = field(default=get_env_variable("AWS_SECRET_ACCESS_KEY"))
     endpointUrl: str = field(default=get_env_variable("AWS_ENDPOINT_URL"))
-    regionName: str = field(default=get_env_variable("AWS_REGION_NAME", "us-west-2"))
+    regionName: str = field(default=get_env_variable("DYNAMODB_REGION"))
+    tableName: str = field(default=get_env_variable("DYNAMODB_TABLE"))
 
 
 if __name__ == "__main__":
