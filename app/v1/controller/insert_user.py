@@ -4,7 +4,7 @@ import logging
 
 from fastapi import APIRouter, Body
 from ..views import UserInsertedResponse, ErrorResponse
-from ..exceptions import HTTPException
+from ..exceptions import HTTPException, DynamoTableDoesNotExist
 from ..model.dynamo_context_manager import DynamoConnection
 from ..model.user import User
 from ..config.db_credentials import DynamoCredentials
@@ -21,33 +21,29 @@ logger = logging.getLogger(__name__)
     "/users",
     tags=["inser_user"],
     response_model=UserInsertedResponse,
-    summary="Simple health check.",
+    summary="Inserisci un nuovo utente in tabella",
     status_code=200,
     responses={
-        400: {"model": ErrorResponse},
         502: {"model": ErrorResponse},
         500: {"model": ErrorResponse},
     },
 )
 async def insert_user(user: User) -> UserInsertedResponse:
-    """Run basic application health check.
+    """Funzione per inserire un nuovo utente
 
-    If the application is up and running then this endpoint will return simple
-    response with status ok. Moreover, if it has Redis enabled then connection
-    to it will be tested. If Redis ping fails, then this endpoint will return
-    502 HTTP error.
-    \f
-
-    Returns:
-        response (ReadyResponse): ReadyResponse model object instance.
+    Args:
+        user (User): Dettagli dell'utente che si vuole aggiungere
 
     Raises:
-        HTTPException: If applications has enabled Redis and can not connect
-            to it. NOTE! This is the custom exception, not to be mistaken with
-            FastAPI.HTTPException class.
+        HTTPException: 502 se la connessione a Dynamo DB non è riuscita
+        HTTPException: 502 se la tabella non esiste
+        HTTPException: 500 per un errore legato al client Dynamo db
+        HTTPException: 500 per un errore generico
 
+    Returns:
+        UserInsertedResponse: Risposta alla chiamata post
     """
-    logger.info("Started POST /users")
+    logger.info("Comincio l'inserimento di un nuovo utente")
 
     # Check if DynamoDB is up and running
 
@@ -73,6 +69,15 @@ async def insert_user(user: User) -> UserInsertedResponse:
                 message="Errore durante l'inserimento dell'utente",
             ).model_dump(exclude_none=True),
         )
+    except DynamoTableDoesNotExist as e:
+        logger.error(f"Tabella non trovata: {e}")
+        raise HTTPException(
+            status_code=502,
+            content=ErrorResponse(
+                code=502,
+                message="Tabella non trovata",
+            ).model_dump(exclude_none=True),
+        )
     except Exception as e:
         logger.error(f"Errore sconosciuto: {e}")
         raise HTTPException(
@@ -83,4 +88,4 @@ async def insert_user(user: User) -> UserInsertedResponse:
             ).model_dump(exclude_none=True),
         )
 
-    return UserInsertedResponse(status="ok", user_id=user_id)
+    return UserInsertedResponse(status="ok", user_id=str(user_id))
