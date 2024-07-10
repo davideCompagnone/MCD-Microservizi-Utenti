@@ -184,7 +184,6 @@ class DynamoConnection:
 
         Raises:
             DynamoTableDoesNotExist: Eccezione sollevata se la tabella non esiste.
-            EmptyTable: Eccezione sollevata se la tabella è vuota.
 
         Returns:
             List[Dict]: Ritorna la lista degli utenti presenti nella tabella
@@ -196,7 +195,7 @@ class DynamoConnection:
         response = table.scan()
         items = response.get("Items", [])
         if not items:
-            raise EmptyTable(self.table_name)
+            logger.warning(f"Tabella '{self.table_name}' vuota.")
         return items
 
     def get_user(self, user_id: str) -> Dict:
