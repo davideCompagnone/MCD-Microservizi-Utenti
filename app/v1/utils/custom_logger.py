@@ -19,26 +19,24 @@ class LogSetupper:
     def setup(self) -> logging.Logger:
         app_logger = logging.getLogger(self._name)
         if self._env == "test":
-            # app_logger.setLevel(logging.DEBUG)
-            # client = google.cloud.logging.Client()
-            # handler = client.get_default_handler()
-            # formatter = self._setup_test_formatter()
-            # TODO settings per logger in ambiente di test
-            pass
+            # Settings per il logger in ambiente test
+            app_logger.setLevel(logging.DEBUG)
+            handler = logging.StreamHandler(sys.stdout)
+            formatter = self._setup_local_formatter()
 
         elif self._env == "local":
             # Settings per il logger in ambiente locale
+            # TODO modificare i settings per l'ambiente prod se necessario
             app_logger.setLevel(logging.DEBUG)
             handler = logging.StreamHandler(sys.stdout)
             formatter = self._setup_local_formatter()
 
         else:
-            # TODO settings per logger in ambiente di produzione
-            # app_logger.setLevel(logging.INFO)
-            # client = google.cloud.logging.Client()
-            # handler = client.get_default_handler()
-            # formatter = self._setup_test_formatter()
-            pass
+            # Settings per il logger in ambiente locale
+            # TODO modificare i settings per l'ambiente prod se necessario
+            app_logger.setLevel(logging.DEBUG)
+            handler = logging.StreamHandler(sys.stdout)
+            formatter = self._setup_local_formatter()
 
         handler.setFormatter(formatter)
         app_logger.handlers = []

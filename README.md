@@ -24,5 +24,6 @@ Il file `esame_master.postman_collection.json` contiene delle chiamate postman d
 AWS_ACCESS_KEY_ID='<key_id>'
 AWS_SECRET_ACCESS_KEY='<access_key>'
 AWS_ENDPOINT_URL='<endpointurl>:<port>'
-AWS_REGION_NAME='<region>' # default a ...
+AWS_REGION_NAME='<region>'
+ENV='local' # 
 ```

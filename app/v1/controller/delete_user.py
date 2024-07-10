@@ -1,19 +1,14 @@
-"""Application implementation - Ready controller."""
-
-import logging
-
 from fastapi import APIRouter
 from ..views import UserDeletedResponse, ErrorResponse
 from ..exceptions import HTTPException, UserNotFound, DynamoTableDoesNotExist
 from ..model.dynamo_context_manager import DynamoConnection
-from ..model.user import User
 from botocore.exceptions import ClientError
-from typing import Dict
+from ..utils.custom_logger import LogSetupper
 
 
 router = APIRouter()
 connection = DynamoConnection()
-logger = logging.getLogger(__name__)
+logger = LogSetupper(__name__).setup()
 
 
 @router.delete(
@@ -64,12 +59,12 @@ async def delete_user(user_id: int) -> UserDeletedResponse:
         logger.error(f"Tabella non trovata: {e}")
         raise HTTPException(
             status_code=502,
-            content=ErrorResponse(
-                code=502, message=f"Tabella non trovata: {e}"
-            ).model_dump(exclude_none=True),
+            content=ErrorResponse(code=502, message=f"Tabella non trovata").model_dump(
+                exclude_none=True
+            ),
         )
     except UserNotFound as e:
-        logger.error(f"Utente con ID {user_id} non trovato: {e}")
+        logger.error(f"Utente non trovato: {e}")
         raise HTTPException(
             status_code=404,
             content=ErrorResponse(
@@ -77,12 +72,12 @@ async def delete_user(user_id: int) -> UserDeletedResponse:
             ).model_dump(exclude_none=True),
         )
     except ClientError as e:
-        logger.error(f"Errore durante l'eliminazione dell'utente: {e}")
+        logger.error(f"Errore client DynamoDB: {e}")
         raise HTTPException(
             status_code=500,
             content=ErrorResponse(
                 code=500,
-                message="Errore durante l'eliminazione dell'utente",
+                message="Errore client DynamoDB",
             ).model_dump(exclude_none=True),
         )
     except Exception as e:
@@ -91,7 +86,7 @@ async def delete_user(user_id: int) -> UserDeletedResponse:
             status_code=500,
             content=ErrorResponse(
                 code=500,
-                message="Internal server error",
+                message="Errore sconosciuto",
             ).model_dump(exclude_none=True),
         )
     return UserDeletedResponse(status="ok", user_id=str(user_id))

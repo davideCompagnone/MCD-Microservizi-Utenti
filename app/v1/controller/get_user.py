@@ -1,17 +1,13 @@
-"""Application implementation - Ready controller."""
-
-import logging
-
 from fastapi import APIRouter
 from ..views import GetUserResponse, ErrorResponse
 from ..exceptions import HTTPException, UserNotFound, DynamoTableDoesNotExist
 from ..model.dynamo_context_manager import DynamoConnection
-from ..model.user import UserResponse
 from botocore.exceptions import ClientError
+from ..utils.custom_logger import LogSetupper
 
 
 router = APIRouter()
-logger = logging.getLogger(__name__)
+logger = LogSetupper(__name__).setup()
 
 # Check if DynamoDB is up and running
 connection = DynamoConnection()
@@ -60,7 +56,7 @@ async def get_user(user_id: int) -> GetUserResponse:
         logger.info(f"Utente {user_id} trovato")
 
     except UserNotFound as e:
-        logger.error(f"Utenta {user_id} non trovato")
+        logger.error(f"Utenta non trovato: {e}")
         raise HTTPException(
             status_code=404,
             content=ErrorResponse(code=404, message="User not found").model_dump(
@@ -68,7 +64,7 @@ async def get_user(user_id: int) -> GetUserResponse:
             ),
         )
     except DynamoTableDoesNotExist as e:
-        logger.error("Tabella non trovata")
+        logger.error(f"Tabella non trovata: {e}")
         raise HTTPException(
             status_code=502,
             content=ErrorResponse(code=502, message="Tabella non trovata").model_dump(
@@ -76,11 +72,11 @@ async def get_user(user_id: int) -> GetUserResponse:
             ),
         )
     except ClientError as e:
-        logger.error(f"Errore legato al client DynamoDB: {e}")
+        logger.error(f"Errore client DynamoDB: {e}")
         raise HTTPException(
             status_code=500,
             content=ErrorResponse(
-                code=500, message="Errore legato al client DynamoDB"
+                code=500, message="Errore client DynamoDB"
             ).model_dump(exclude_none=True),
         )
     except Exception as e:
