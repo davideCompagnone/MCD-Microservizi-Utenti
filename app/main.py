@@ -4,7 +4,7 @@ from fastapi import FastAPI
 import os
 
 # Setup dell'applicazione in locale
-if os.getenv("ENV") == "local":
+if os.getenv("ENVIRONMENT") == "local":
     from v1.model.dynamo_context_manager import DynamoConnection
     from v1.utils.custom_logger import LogSetupper
 
