@@ -189,11 +189,9 @@ class DynamoConnection:
 
     def update_user(self, user_id: int, user_data: User) -> None:
         """Funzione per aggiornare un user esistente
-
         Args:
             user_id (int): User id dell'utente da aggiornare
             user_data (User): Nuovi dati dell'utente
-
         Raises:
             DynamoTableDoesNotExist: Se la tabella non esiste
             UserNotFound: Se l'utente non esiste
@@ -202,7 +200,7 @@ class DynamoConnection:
             raise DynamoTableDoesNotExist(self.table_name)
         if not self.user_exists(user_id):
             raise UserNotFound(user_id)
-
+            
         self.dynamo_db.Table(self.table_name).update_item(
             Key={"user_id": user_id},
             UpdateExpression="set nome=:n, cognome=:c, cf=:cf, p_iva=:p_iva, email=:e, n_telefono=:n_t, indirizzo_residenza=:i_r, indirizzo_fatturazione=:i_f",
@@ -219,6 +217,7 @@ class DynamoConnection:
             ReturnValues="UPDATED_NEW",
         )
 
+        
     # Funzione per cancellare la tabella
     def delete_table(self):
         """Funzione per eliminare la tabella. La tabella è la stessa passata al costruttore della classe.
