@@ -52,7 +52,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/v1/users/2",
+					"raw": "http://localhost:8080/v1/users/7",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -61,7 +61,7 @@
 					"path": [
 						"v1",
 						"users",
-						"2"
+						"7"
 					]
 				}
 			},
@@ -73,7 +73,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/v1/users/1",
+					"raw": "http://localhost:8080/v1/users/7",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -82,7 +82,7 @@
 					"path": [
 						"v1",
 						"users",
-						"1"
+						"7"
 					]
 				}
 			},
@@ -95,7 +95,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"nome\": \"Federocp\",\r\n    \"cognome\": \"Cantarelli\",\r\n    \"codice_fiscale\": \"Codice Fiscale\",\r\n    \"partita_iva\": \"Partita IVA\",\r\n    \"email\": \"cantafede98@gmail.com\",\r\n    \"numero_telefono\": \"3469660968\",\r\n    \"indirizzo_residenza\": \"Via roma 1, Milano\",\r\n    \"indirizzo_fatturazione\": \"Via roma 1 Milano\"\r\n}",
+					"raw": "{\r\n    \"nome\": \"Federocp\",\r\n    \"cognome\": \"Cantarelli\",\r\n    \"cf\": \"Codice Fiscale\",\r\n    \"p_iva\": \"Partita IVA\",\r\n    \"email\": \"cantafede98@gmail.com\",\r\n    \"n_telefono\": \"3469660968\",\r\n    \"indirizzo_residenza\": \"Via roma 1, Milano\",\r\n    \"indirizzo_fatturazione\": \"Via roma 1 Milano\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -132,7 +132,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/v1/users/2",
+					"raw": "http://localhost:8080/v1/users/200",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -141,7 +141,7 @@
 					"path": [
 						"v1",
 						"users",
-						"2"
+						"200"
 					]
 				}
 			},
