@@ -150,7 +150,7 @@ class DynamoConnection:
                 "indirizzo_fatturazione": user.indirizzo_fatturazione,
             }
         )
-        logger.info(f"Utente con ID {new_user_id} inserito con successo.")
+        logger.debug(f"Utente con ID {new_user_id} inserito con successo.")
         return new_user_id
 
     def user_exists(self, user_id: str) -> bool:
@@ -200,7 +200,7 @@ class DynamoConnection:
             raise DynamoTableDoesNotExist(self.table_name)
         if not self.user_exists(user_id):
             raise UserNotFound(user_id)
-            
+
         self.dynamo_db.Table(self.table_name).update_item(
             Key={"user_id": user_id},
             UpdateExpression="set nome=:n, cognome=:c, cf=:cf, p_iva=:p_iva, email=:e, n_telefono=:n_t, indirizzo_residenza=:i_r, indirizzo_fatturazione=:i_f",
@@ -217,7 +217,6 @@ class DynamoConnection:
             ReturnValues="UPDATED_NEW",
         )
 
-        
     # Funzione per cancellare la tabella
     def delete_table(self):
         """Funzione per eliminare la tabella. La tabella è la stessa passata al costruttore della classe.
@@ -322,7 +321,7 @@ class DynamoConnection:
             ProvisionedThroughput={"ReadCapacityUnits": 10, "WriteCapacityUnits": 10},
         )
         table.meta.client.get_waiter("table_exists").wait(TableName=self.table_name)
-        logger.info(f"Tabella '{self.table_name}' creata con successo!")
+        logger.debug(f"Tabella '{self.table_name}' creata con successo!")
 
     @property
     def is_alive(self) -> Tuple[bool, int]:
