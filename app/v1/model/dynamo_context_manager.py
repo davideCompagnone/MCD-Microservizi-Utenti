@@ -123,19 +123,21 @@ class DynamoConnection:
         max_user_id = max(items, key=lambda x: int(x["user_id"]))["user_id"]
         return max_user_id
 
-    def insert_user(self, user: User) -> str:
+    def insert_user(self, user: User) -> int:
+        """Funzione per inserire un nuovo utente.
+
+        Args:
+            user (User): Dettagli utenti da inserire
+
+        Raises:
+            DynamoTableDoesNotExist: Se la tabella non esiste
+
+        Returns:
+            int: Id dell'utente appena creato
+        """
         if not self.table_exists:
-            logger.warning(
-                f"La tabella '{self.table_name}' non esiste. Creazione in corso..."
-            )
-            try:
-                self.create_users_table()
-                logger.info(f"Tabella '{self.table_name}' creata con successo!")
-            except Exception as e:
-                logger.error(
-                    f"Errore durante la creazione della tabella '{self.table_name}': {e}"
-                )
-                raise e
+            logger.error(f"La tabella '{self.table_name}' non esiste.")
+            raise DynamoTableDoesNotExist(self.table_name)
 
         max_id = self.get_max_table_id()
         logger.debug(f"ID massimo presente nella tabella: {max_id}")
@@ -148,16 +150,16 @@ class DynamoConnection:
                 "user_id": new_user_id,
                 "nome": user.nome,
                 "cognome": user.cognome,
-                "cf": user.codice_fiscale,
-                "p_iva": user.partita_iva,
+                "cf": user.cf,
+                "p_iva": user.p_iva,
                 "email": user.email,
-                "n_telefono": user.numero_telefono,
+                "n_telefono": user.n_telefono,
                 "indirizzo_residenza": user.indirizzo_residenza,
                 "indirizzo_fatturazione": user.indirizzo_fatturazione,
             }
         )
         logger.info(f"Utente con ID {new_user_id} inserito con successo.")
-        return str(new_user_id)
+        return new_user_id
 
     def user_exists(self, user_id: str) -> bool:
         """Funzione per verificare se un utente esiste nella tabella.
