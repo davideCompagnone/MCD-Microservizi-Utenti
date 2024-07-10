@@ -4,6 +4,7 @@ from ..exceptions import HTTPException, DynamoTableDoesNotExist
 from ..model.dynamo_context_manager import DynamoConnection
 from typing import List
 from ..utils.custom_logger import LogSetupper
+from botocore.exceptions import ClientError
 
 router = APIRouter()
 logger = LogSetupper(__name__).setup()
@@ -48,13 +49,22 @@ async def get_all_user() -> GetAllUsersResponse:
         logger.info(f"Fetch di tutti gli utenti eseguito.")
 
     except DynamoTableDoesNotExist:
-        logger.error("Tabella non trovata")
+        logger.error(f"Tabella non trovata: {e}")
         raise HTTPException(
             status_code=502,
             content=ErrorResponse(code=502, message="Tabella non trovata").model_dump(
                 exclude_none=True
             ),
         )
+    except ClientError as e:
+        logger.error(f"Errore client DynamoDB: {e}")
+        raise HTTPException(
+            status_code=500,
+            content=ErrorResponse(
+                code=500, message="Errore client DynamoDB"
+            ).model_dump(exclude_none=True),
+        )
+
     except Exception as e:
         logger.error(f"Errore sconosciuto: {e}")
         raise HTTPException(

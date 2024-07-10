@@ -56,22 +56,20 @@ async def insert_user(user: User) -> UserInsertedResponse:
         logger.info(f"Utente inserito con id {user_id}")
 
     except ClientError as e:
-        logger.error(f"Errore durante l'inserimento dell'utente: {e}")
+        logger.error(f"Errore client DynamoDB: {e}")
         raise HTTPException(
             status_code=500,
             content=ErrorResponse(
-                code=500,
-                message="Errore durante l'inserimento dell'utente",
+                code=500, message="Errore client DynamoDB"
             ).model_dump(exclude_none=True),
         )
     except DynamoTableDoesNotExist as e:
         logger.error(f"Tabella non trovata: {e}")
         raise HTTPException(
             status_code=502,
-            content=ErrorResponse(
-                code=502,
-                message="Tabella non trovata",
-            ).model_dump(exclude_none=True),
+            content=ErrorResponse(code=502, message="Tabella non trovata").model_dump(
+                exclude_none=True
+            ),
         )
     except Exception as e:
         logger.error(f"Errore sconosciuto: {e}")
@@ -79,7 +77,7 @@ async def insert_user(user: User) -> UserInsertedResponse:
             status_code=500,
             content=ErrorResponse(
                 code=500,
-                message="Internal server error",
+                message="Errore sconosciuto",
             ).model_dump(exclude_none=True),
         )
 
