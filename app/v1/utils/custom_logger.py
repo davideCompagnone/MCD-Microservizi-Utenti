@@ -8,36 +8,13 @@ import sys
 
 class LogSetupper:
     def __init__(self, name: str):
-        self._env = os.getenv("ENV", "local")
         self._name = name
-        assert self._env in [
-            "test",
-            "local",
-            "prod",
-        ], "Valore non valido per la variabile ambientale ENV. Got {}".format(self._env)
 
     def setup(self) -> logging.Logger:
         app_logger = logging.getLogger(self._name)
-        if self._env == "test":
-            # Settings per il logger in ambiente test
-            app_logger.setLevel(logging.DEBUG)
-            handler = logging.StreamHandler(sys.stdout)
-            formatter = self._setup_local_formatter()
-
-        elif self._env == "local":
-            # Settings per il logger in ambiente locale
-            # TODO modificare i settings per l'ambiente prod se necessario
-            app_logger.setLevel(logging.DEBUG)
-            handler = logging.StreamHandler(sys.stdout)
-            formatter = self._setup_local_formatter()
-
-        else:
-            # Settings per il logger in ambiente locale
-            # TODO modificare i settings per l'ambiente prod se necessario
-            app_logger.setLevel(logging.INFO)
-            handler = logging.StreamHandler(sys.stdout)
-            formatter = self._setup_local_formatter()
-
+        app_logger.setLevel(logging.DEBUG)
+        handler = logging.StreamHandler(sys.stdout)
+        formatter = self._setup_local_formatter()
         handler.setFormatter(formatter)
         app_logger.handlers = []
         app_logger.addHandler(handler)
