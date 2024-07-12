@@ -25,6 +25,4 @@ async def readiness_check() -> ReadyResponse:
         ReadyResponse: Risposta alla chiamata
     """
     logger.info("Started GET /ready")
-    env_config = DynamoCredentials()
-
-    return ReadyResponse(status="ok", version=env_config.version)
+    return ReadyResponse(status="ok")
