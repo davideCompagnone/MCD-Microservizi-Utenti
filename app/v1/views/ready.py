@@ -8,7 +8,6 @@ from datetime import datetime
 
 class ReadyResponse(BaseModel):
     status: str
-    version: str
     time: datetime = Field(default=datetime.now(), description="Current time.")
 
     class Config:
