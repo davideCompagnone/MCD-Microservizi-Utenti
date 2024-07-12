@@ -2,11 +2,14 @@
 
 from typing import Any, Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from datetime import datetime
 
 
 class ReadyResponse(BaseModel):
     status: str
+    version: str
+    time: datetime = Field(default=datetime.now(), description="Current time.")
 
     class Config:
         """Config sub-class needed to extend/override the generated JSON schema.
