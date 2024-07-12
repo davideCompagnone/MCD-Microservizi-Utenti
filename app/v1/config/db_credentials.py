@@ -47,6 +47,7 @@ class DynamoCredentials:
         default=get_env_variable("DYNAMODB_REGION", default="eu-west-1")
     )
     tableName: str = field(default=get_env_variable("UsersTable"))
+    version: str = field(default=get_env_variable("TagVersion"))
 
 
 if __name__ == "__main__":
