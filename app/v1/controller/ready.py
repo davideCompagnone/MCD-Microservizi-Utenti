@@ -21,7 +21,7 @@ async def readiness_check() -> ReadyResponse:
     """Funzione per verificare che l'interfaccia API sia pronta. Esegue anche un check su DynamoDB.
 
     Raises:
-        HTTPException: 502 se la connessione a Dynamo DB non è riuscita
+        HTTPException: alza un eccezione 502 se la connessione a Dynamo DB non è riuscita
 
     Returns:
         ReadyResponse: Risposta alla chiamata
