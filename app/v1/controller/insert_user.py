@@ -81,4 +81,4 @@ async def insert_user(user: User) -> UserInsertedResponse:
             ).model_dump(exclude_none=True),
         )
 
-    return UserInsertedResponse(status="ok", user_id=user_id)
+    return UserInsertedResponse(status="ok", user_id=str(user_id))

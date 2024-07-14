@@ -23,11 +23,11 @@ logger = LogSetupper(__name__).setup()
         500: {"model": ErrorResponse},
     },
 )
-async def delete_user(user_id: str) -> UserDeletedResponse:
+async def delete_user(user_id: int) -> UserDeletedResponse:
     """Funzione per eliminare un utente dato il suo user id
 
     Args:
-        user_id (str): Id dell'utente da eliminare
+        user_id (int): Id dell'utente da eliminare
 
     Raises:
         HTTPException: 502 se la connessione a Dynamo DB non è riuscita
@@ -89,4 +89,4 @@ async def delete_user(user_id: str) -> UserDeletedResponse:
                 message="Errore sconosciuto",
             ).model_dump(exclude_none=True),
         )
-    return UserDeletedResponse(status="ok", user_id=user_id)
+    return UserDeletedResponse(status="ok", user_id=str(user_id))
