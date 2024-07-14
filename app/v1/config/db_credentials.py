@@ -16,19 +16,14 @@ def get_env_variable(var_name: str, default=None) -> str:
         str: Il valore della variabile d'ambiente.
 
     """
-    return os.getenv(var_name)
-    # try:
-    #     # Restituisce il valore della variabile d'ambiente
-
-    #     return os.environ[var_name]
-    # # Se non esiste
-    # except KeyError as e:
-    #     # Se è definito un valore di default lo restituisce
-    #     if default is not None:
-    #         return default
-    #     raise EnvironmentError(
-    #         f"La variabile {var_name} non è stata impostata correttamente."
-    #     )
+    val = os.getenv(var_name)
+    if not val:
+        if not default:
+            raise EnvironmentError(
+                f"La variabile {var_name} non è stata impostata correttamente."
+            )
+        return default
+    return val
 
 
 @dataclass(frozen=True, slots=True)

@@ -24,12 +24,12 @@ logger = LogSetupper(__name__).setup()
         500: {"model": ErrorResponse},
     },
 )
-async def update_user(user_id: int, user: User) -> UserUpdatedResponse:
+async def update_user(user_id: str, user: User) -> UserUpdatedResponse:
     """Funzione per aggiornare un utente
 
     Args:
-        user_id (int): user id dell'utente coinvolto dall'aggiornamento
-        user (User):
+        user_id (str): user id dell'utente coinvolto dall'aggiornamento
+        user (User): Dettagli dell'utente da aggiornare
 
     Raises:
         HTTPException: 502 se la connessione a Dynamo DB non è riuscita \f
