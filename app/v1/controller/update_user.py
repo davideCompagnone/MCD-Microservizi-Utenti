@@ -82,6 +82,7 @@ async def update_user(user_id: str, user: User) -> UserUpdatedResponse:
                 exclude_none=True
             ),
         )
+
     except Exception as e:
         logger.error(f"Errore sconosciuto: {e}")
         raise HTTPException(
@@ -92,4 +93,4 @@ async def update_user(user_id: str, user: User) -> UserUpdatedResponse:
             ).model_dump(exclude_none=True),
         )
 
-    return UserUpdatedResponse(status="ok", user_id=str(user_id))
+    return UserUpdatedResponse(status="ok", user_id=user_id)

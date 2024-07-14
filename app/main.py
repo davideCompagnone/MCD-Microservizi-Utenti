@@ -10,7 +10,6 @@ if os.getenv("ENV") == "local":
 
     logger = LogSetupper(__name__).setup()
     connection = DynamoConnection()
-    logger.info(f"Connessione a DynamoDB: {connection.credentials}")
     if connection.is_alive and not connection.table_exists:
         logger.warning(
             f"Tabella {connection.table_name} non trovata e ambiente di esecuzione local, la creo..."

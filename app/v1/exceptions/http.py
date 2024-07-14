@@ -4,7 +4,6 @@ from typing import Any, Optional, Dict
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError
 
 
 class HTTPException(Exception):
