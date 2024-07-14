@@ -13,4 +13,4 @@ class User(BaseModel):
 
 
 class UserResponse(User):
-    user_id: int
+    id: str
