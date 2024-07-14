@@ -4,6 +4,9 @@ class DynamoTableDoesNotExist(Exception):
         self.message = f"Tabella {table_name} non trovata"
         super().__init__(self.message)
 
+    def __str__(self) -> str:
+        return f"La tabella {self.table_name} non esiste"
+
 
 class DynamoTableAlreadyExists(Exception):
     def __init__(self, table_name: str):

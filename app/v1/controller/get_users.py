@@ -31,7 +31,7 @@ async def get_all_user() -> GetAllUsersResponse:
         GetAllUsersResponse: Elenco di tutti gli utenti presenti nella tabella
     """
 
-    logger.info("Comincio retrieve di tutti lgi utenti")
+    logger.info("Comincio retrieve di tutti gli utenti")
 
     # Check if DynamoDB is up and running
 
@@ -48,7 +48,7 @@ async def get_all_user() -> GetAllUsersResponse:
         users: List = connection.get_users()
         logger.info(f"Fetch di tutti gli utenti eseguito.")
 
-    except DynamoTableDoesNotExist:
+    except DynamoTableDoesNotExist as e:
         logger.error(f"Tabella non trovata: {e}")
         raise HTTPException(
             status_code=502,

@@ -25,7 +25,7 @@ connection = DynamoConnection()
         500: {"model": ErrorResponse},
     },
 )
-async def get_user(user_id: int) -> GetUserResponse:
+async def get_user(user_id: str) -> GetUserResponse:
     """Funzione per ottenere i dettagli di un utente dato il suo user id
 
     Args:

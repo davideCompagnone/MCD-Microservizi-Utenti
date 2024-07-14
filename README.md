@@ -24,7 +24,7 @@ Il file `esame_master.postman_collection.json` contiene delle chiamate postman d
 AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
 AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
 AWS_ENDPOINT_URL='http://dynamodb-local:8000'
-ENVIRONMENT='local' # variabile per configurazioni dipendenti dall'ambiente di esecuzione, come il livello dei log
+ENV='local' # variabile per configurazioni dipendenti dall'ambiente di esecuzione, come il livello dei log
 DYNAMODB_REGION='eu-west-1'
 DYNAMODB_TABLE='MCDE2023-users-cf'
 ```
