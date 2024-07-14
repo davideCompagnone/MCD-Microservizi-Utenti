@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 import os
 
 
-def get_env_variable(var_name: str, default=None) -> str:
+def get_env_variable(var_name: str, default) -> str:
     """Esegui il parsing di una variabile d'ambiente.
 
     Args:
@@ -31,7 +31,9 @@ class DynamoCredentials:
 
     awsAccessKeyId: str = field(default=get_env_variable("AWS_ACCESS_KEY_ID"))
     awsSecretAccessKey: str = field(default=get_env_variable("AWS_SECRET_ACCESS_KEY"))
-    endpointUrl: str = field(default=get_env_variable("AWS_ENDPOINT_URL"))
+    endpointUrl: str = field(
+        default=get_env_variable("AWS_ENDPOINT_URL", default="prod")
+    )
     regionName: str = field(default=get_env_variable("DYNAMODB_REGION"))
     tableName: str = field(default=get_env_variable("DYNAMODB_TABLE"))
 
