@@ -14,7 +14,6 @@ def get_env_variable(var_name: str, default=None) -> str:
 
     Returns:
         str: Il valore della variabile d'ambiente.
-
     """
     val = os.getenv(var_name)
     if not val:

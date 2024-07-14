@@ -24,7 +24,7 @@ logger = LogSetupper(__name__).setup()
         500: {"model": ErrorResponse},
     },
 )
-async def update_user(user_id: str, user: User) -> UserUpdatedResponse:
+async def update_user(user_id: int, user: User) -> UserUpdatedResponse:
     """Funzione per aggiornare un utente
 
     Args:
@@ -93,4 +93,4 @@ async def update_user(user_id: str, user: User) -> UserUpdatedResponse:
             ).model_dump(exclude_none=True),
         )
 
-    return UserUpdatedResponse(status="ok", user_id=user_id)
+    return UserUpdatedResponse(status="ok", user_id=str(user_id))

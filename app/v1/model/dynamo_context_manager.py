@@ -5,7 +5,6 @@ from typing import List, Dict, Tuple
 from ..model.user import User
 from ..utils.custom_logger import LogSetupper
 import os
-import uuid
 
 logger = LogSetupper(__name__).setup()
 
@@ -104,12 +103,12 @@ class DynamoConnection:
             logger.error(f"La tabella '{self.table_name}' non esiste.")
             raise DynamoTableDoesNotExist(self.table_name)
 
-        new_user_id = str(uuid.uuid4())
+        new_user_id = self.get_max_table_id() + 1
 
         table = self.dynamo_db.Table(self.table_name)
         table.put_item(
             Item={
-                "id": new_user_id,
+                "user_id": new_user_id,
                 "nome": user.nome,
                 "cognome": user.cognome,
                 "cf": user.cf,
@@ -133,15 +132,15 @@ class DynamoConnection:
             bool: True se l'utente esiste, False altrimenti
         """
         table = self.dynamo_db.Table(self.table_name)
-        response = table.get_item(Key={"id": user_id})
+        response = table.get_item(Key={"user_id": user_id})
         return "Item" in response
 
     # Funzione per cancellare un utente
-    def delete_user(self, user_id: str):
+    def delete_user(self, user_id: int):
         """Funzione per eliminare un utente partendo dall'id
 
         Args:
-            user_id (str): User ID dell'utente da eliminare
+            user_id (int): User ID dell'utente da eliminare
 
         Raises:
             DynamoTableDoesNotExist: tabella non esistente
@@ -155,9 +154,9 @@ class DynamoConnection:
 
         table = self.dynamo_db.Table(self.table_name)
 
-        table.delete_item(Key={"id": user_id})
+        table.delete_item(Key={"user_id": user_id})
 
-    def update_user(self, user_id: str, user_data: User) -> int:
+    def update_user(self, user_id: int, user_data: User) -> int:
         """Funzione per aggiornare un user esistente
         Args:
             user_id (int): User id dell'utente da aggiornare
@@ -174,7 +173,7 @@ class DynamoConnection:
             raise UserNotFound(user_id)
 
         self.dynamo_db.Table(self.table_name).update_item(
-            Key={"id": user_id},
+            Key={"user_id": user_id},
             UpdateExpression="set nome=:n, cognome=:c, cf=:cf, p_iva=:p_iva, email=:e, n_telefono=:n_t, indirizzo_residenza=:i_r, indirizzo_fatturazione=:i_f",
             ExpressionAttributeValues={
                 ":n": user_data.nome,
@@ -240,7 +239,7 @@ class DynamoConnection:
 
         table = self.dynamo_db.Table(self.table_name)
 
-        response = table.get_item(Key={"id": user_id})
+        response = table.get_item(Key={"user_id": user_id})
         item = response.get("Item")
         if not item:
             raise UserNotFound(user_id)
@@ -260,14 +259,14 @@ class DynamoConnection:
             TableName=self.table_name,
             AttributeDefinitions=[
                 {
-                    "AttributeName": "id",
-                    "AttributeType": "S",  # S per stringa, N per numero, etc.
+                    "AttributeName": "user_id",
+                    "AttributeType": "N",  # S per stringa, N per numero, etc.
                 },
                 # Aggiungi altri attributi se necessario
             ],
             KeySchema=[
                 {
-                    "AttributeName": "id",
+                    "AttributeName": "user_id",
                     "KeyType": "HASH",  # HASH per chiave primaria
                 },
                 # Aggiungi altre chiavi se necessario (es. RANGE per chiave di ordinamento)
@@ -277,7 +276,7 @@ class DynamoConnection:
                     "IndexName": self.index_name,
                     "KeySchema": [
                         {
-                            "AttributeName": "id",
+                            "AttributeName": "user_id",
                             "KeyType": "HASH",  # HASH per chiave primaria
                         },
                         # Aggiungi altre chiavi se necessario
@@ -303,3 +302,27 @@ class DynamoConnection:
             response["ResponseMetadata"]["HTTPStatusCode"] == 200,
             response["ResponseMetadata"]["HTTPStatusCode"],
         )
+
+    # Funzione per ritornare il massimo ID presente nella tabella
+    def get_max_table_id(self) -> int:
+        """Funzione per ottenere l'ID massimo presente nella tabella.
+
+        Raises:
+            DynamoTableDoesNotExist: Eccezione sollevata se la tabella non esiste.
+
+        Returns:
+            int: Ritorna l'ID massimo presente nella tabella
+        """
+
+        if not self.table_exists:
+            raise DynamoTableDoesNotExist(self.table_name)
+        table = self.dynamo_db.Table(self.table_name)
+        response = table.scan(
+            Select="ALL_ATTRIBUTES",  # Indica di restituire tutti gli attributi degli item trovati
+        )
+        items = response["Items"]
+        if not items:
+            return 0
+
+        max_user_id = max(items, key=lambda x: int(x["user_id"]))["user_id"]
+        return max_user_id
