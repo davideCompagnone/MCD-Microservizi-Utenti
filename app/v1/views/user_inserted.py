@@ -1,13 +1,14 @@
 """Implementazione della risposta ready del servizio"""
 
 from typing import Any, Dict
-
-from pydantic import BaseModel
+from datetime import datetime
+from pydantic import BaseModel, Field
 
 
 class UserInsertedResponse(BaseModel):
     status: str
     user_id: str
+    timestamp: datetime = Field(default=datetime.now())
 
     class Config:
         """Config sub-class needed to extend/override the generated JSON schema.
